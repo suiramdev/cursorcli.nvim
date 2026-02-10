@@ -5,11 +5,10 @@ Cursor Agent integration for Neovim. This plugin provides a floating terminal UI
 ## Features
 
 - Floating window terminal for the `agent` CLI.
-- Session management helpers:
-  - Open, close, toggle, restart, and resume sessions.
-  - List previous sessions via `agent ls`.
+- **Toggle** to open the agent (or create a session if none) or close the window; **restart** to start a new session. Resume and list sessions via `agent ls`.
 - Add file/line range references to the agent from the current buffer or a visual selection, in the form `@path:start-end`.
 - **Fix error at cursor**: send a message asking the agent to fix the diagnostic/error at the cursor, with the error text in a ``` code block and `@file:start-end` for the location.
+- **Add to new session (CAPS)**: with `<Leader>aA` — in **normal** mode, start a new session and send the error at cursor (same format as above); in **visual** mode, start a new session and send the highlighted code in a ``` block plus `@file:start-end`.
 
 ## Requirements
 
@@ -35,10 +34,9 @@ Using `lazy.nvim`:
     }
   end,
   keys = {
-    { "<leader>at", function() require("cursor_agent").toggle() end, desc = "Toggle Cursor Agent terminal", mode = "n" },
-    { "<leader>ao", function() require("cursor_agent").open() end,   desc = "Open Cursor Agent terminal",   mode = "n" },
-    { "<leader>ac", function() require("cursor_agent").close() end,  desc = "Close Cursor Agent terminal",  mode = "n" },
-    { "<leader>ar", function() require("cursor_agent").restart() end,desc = "Restart Cursor Agent terminal",mode = "n" },
+    { "<leader>at", function() require("cursor_agent").toggle() end, desc = "Toggle agent (open/create if none)", mode = "n" },
+    { "<leader>ac", function() require("cursor_agent").close() end,  desc = "Close Cursor Agent terminal",     mode = "n" },
+    { "<leader>ar", function() require("cursor_agent").restart() end,desc = "Restart Cursor Agent (new session)", mode = "n" },
     { "<leader>aR", function() require("cursor_agent").resume() end, desc = "Resume last Cursor Agent chat",mode = "n" },
     { "<leader>as", function() require("cursor_agent").list_sessions() end,
       desc = "List Cursor Agent sessions", mode = "n" },
@@ -46,6 +44,10 @@ Using `lazy.nvim`:
       desc = "Add visual selection to Cursor Agent chat", mode = "x" },
     { "<leader>af", function() require("cursor_agent").request_fix_error_at_cursor() end,
       desc = "Ask Cursor Agent to fix error at cursor", mode = "n" },
+    { "<leader>aA", function() require("cursor_agent").request_fix_error_at_cursor_in_new_session() end,
+      desc = "New session: send error at cursor", mode = "n" },
+    { "<leader>aA", function() require("cursor_agent").add_visual_selection_to_new_session() end,
+      desc = "New session: send visual selection", mode = "x" },
   },
 }
 ```
@@ -74,19 +76,22 @@ Once the plugin is published on GitHub, replace `dir = ...` with `"your-user/cur
 
 Commands provided by the plugin:
 
-- `:CursorAgentOpen` – open an Agent session in a floating terminal.
+- `:CursorAgentToggle` – open the agent (create a session if none) or close the window. Main way to open.
+- `:CursorAgentOpen` – same as toggle “on” (open or create); useful for scripts.
 - `:CursorAgentClose` – close the Agent window.
-- `:CursorAgentToggle` – toggle the Agent window.
-- `:CursorAgentRestart` – stop the current session and start a new one.
+- `:CursorAgentRestart` – stop the current session and start a new one. Kept as the explicit “new session” action.
 - `:CursorAgentResume` – resume the last session (`agent --continue`).
 - `:CursorAgentListSessions` – run `agent ls` in the Agent window.
 - `:CursorAgentAddSelection` – add a `@file:start-end` reference for a given line range.
 - `:CursorAgentFixErrorAtCursor` – send the diagnostic/error at the cursor to the agent in a “please fix” message (error in ``` block, plus `@file:start-end`).
+- `:CursorAgentFixErrorAtCursorInNewSession` – start a **new** agent session and send the error at cursor (same format).
+- `:CursorAgentAddVisualSelectionToNewSession` – start a **new** agent session and send the visual selection (code in ``` block + `@file:start-end`).
 
 Helpers and keybindings (when configured):
 
 - **Visual selection**: `require("cursor_agent").add_visual_selection()` or e.g. `<leader>aa` – send selection as `@file:start-end`.
 - **Fix error at cursor**: `require("cursor_agent").request_fix_error_at_cursor()` or e.g. `<leader>af` – send error at cursor and ask agent to fix it.
+- **New session with CAPS**: `<leader>aA` – in normal mode, new session + error at cursor; in visual mode, new session + highlighted code and `@file:start-end`.
 
 - Call `require("cursor_agent").add_visual_selection()` (or use a mapped key such as `<leader>aa`) to send a reference for the current visual selection.
 

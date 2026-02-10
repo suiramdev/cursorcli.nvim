@@ -232,8 +232,10 @@ local function start_agent_session(resume_last, extra_args)
   return true
 end
 
+--- Show existing session window, or start a new one if none. (resume_last / extra_args for resume/ls.)
 local function ensure_session(resume_last, extra_args)
-  if not resume_last and not (extra_args and #extra_args > 0) and is_job_running() and is_valid_buf(state.buf) then
+  local reuse = not resume_last and not (extra_args and #extra_args > 0)
+  if reuse and is_job_running() and is_valid_buf(state.buf) then
     return open_window()
   end
   return start_agent_session(resume_last, extra_args)
@@ -321,6 +323,8 @@ local function setup_commands()
     "CursorAgentListSessions",
     "CursorAgentAddSelection",
     "CursorAgentFixErrorAtCursor",
+    "CursorAgentFixErrorAtCursorInNewSession",
+    "CursorAgentAddVisualSelectionToNewSession",
   }
 
   for _, name in ipairs(command_names) do
@@ -347,6 +351,16 @@ local function setup_commands()
   end, {
     desc = "Send error at cursor to Cursor Agent and ask to fix it",
   })
+  api.nvim_create_user_command("CursorAgentFixErrorAtCursorInNewSession", function()
+    M.request_fix_error_at_cursor_in_new_session()
+  end, {
+    desc = "Start new session and send error at cursor to Cursor Agent",
+  })
+  api.nvim_create_user_command("CursorAgentAddVisualSelectionToNewSession", function()
+    M.add_visual_selection_to_new_session()
+  end, {
+    desc = "Start new session and send visual selection (code + @file ref) to Cursor Agent",
+  })
 end
 
 function M.setup(opts)
@@ -364,6 +378,7 @@ function M.setup(opts)
   return M
 end
 
+--- Open the agent: show existing session or create a new one if none.
 function M.open()
   if not state.setup_done then M.setup() end
   if not ensure_session() then return false end
@@ -376,6 +391,7 @@ function M.close()
   return true
 end
 
+--- Toggle the agent window: open (or create session if none) when closed, close when open.
 function M.toggle()
   if not state.setup_done then M.setup() end
   if is_valid_win(state.win) then
@@ -444,19 +460,13 @@ function M.add_visual_selection()
   return M.add_selection(start_pos[2], end_pos[2], api.nvim_get_current_buf())
 end
 
---- Send a message asking the agent to fix the error at the cursor, with the
---- error text in a code block and @file:start-end for the error location.
-function M.request_fix_error_at_cursor()
-  if not state.setup_done then M.setup() end
-
+--- Build the "fix error at cursor" message (error in ``` block + @file:start-end).
+--- Returns message string or nil if no diagnostic at cursor.
+local function build_fix_error_message_at_cursor()
   local bufnr = api.nvim_get_current_buf()
   local line = api.nvim_win_get_cursor(0)[1]
-
   local diagnostics = vim.diagnostic.get(bufnr, { lnum = line - 1 })
-  if not diagnostics or #diagnostics == 0 then
-    notify("No diagnostic/error at cursor position.", vim.log.levels.WARN)
-    return false
-  end
+  if not diagnostics or #diagnostics == 0 then return nil end
 
   local error_lines = {}
   local line_start, line_end = line, line
@@ -469,13 +479,62 @@ function M.request_fix_error_at_cursor()
   end
   local error_text = table.concat(error_lines, "\n")
   local reference = create_reference(bufnr, line_start, line_end)
-  if not reference then return false end
+  if not reference then return nil end
+  return ("Please fix the following error:\n\n```\n%s\n```\n\n%s"):format(error_text, reference)
+end
 
-  local message = ("Please fix the following error:\n\n```\n%s\n```\n\n%s"):format(error_text, reference)
+--- Send a message asking the agent to fix the error at the cursor, with the
+--- error text in a code block and @file:start-end for the error location.
+function M.request_fix_error_at_cursor()
+  if not state.setup_done then M.setup() end
+  local message = build_fix_error_message_at_cursor()
+  if not message then
+    notify("No diagnostic/error at cursor position.", vim.log.levels.WARN)
+    return false
+  end
   if not M.open() then return false end
   if not send_to_agent(message .. "\n") then return false end
-
   notify("Sent fix-error request to Cursor Agent.", vim.log.levels.INFO)
+  return true
+end
+
+--- Start a new agent session and send the "fix error at cursor" message.
+function M.request_fix_error_at_cursor_in_new_session()
+  if not state.setup_done then M.setup() end
+  local message = build_fix_error_message_at_cursor()
+  if not message then
+    notify("No diagnostic/error at cursor position.", vim.log.levels.WARN)
+    return false
+  end
+  if not M.restart() then return false end
+  if not send_to_agent(message .. "\n") then return false end
+  notify("Sent fix-error request to new Cursor Agent session.", vim.log.levels.INFO)
+  return true
+end
+
+--- Start a new agent session and send the visual selection as highlighted code
+--- (code in ``` block + @file:start-end).
+function M.add_visual_selection_to_new_session()
+  if not state.setup_done then M.setup() end
+  local start_pos = fn.getpos "'<"
+  local end_pos = fn.getpos "'>"
+  if not start_pos or not end_pos or start_pos[2] == 0 or end_pos[2] == 0 then
+    notify("No visual selection found.", vim.log.levels.WARN)
+    return false
+  end
+  local bufnr = api.nvim_get_current_buf()
+  local reference = create_reference(bufnr, start_pos[2], end_pos[2])
+  if not reference then return false end
+  local start_row = start_pos[2] - 1
+  local start_col = start_pos[3] - 1
+  local end_row = end_pos[2] - 1
+  local end_col = end_pos[3]
+  local lines = api.nvim_buf_get_text(bufnr, start_row, start_col, end_row, end_col, {})
+  local code_text = table.concat(lines, "\n")
+  local message = ("Consider this code:\n\n```\n%s\n```\n\n%s"):format(code_text, reference)
+  if not M.restart() then return false end
+  if not send_to_agent(message .. "\n") then return false end
+  notify("Sent selection to new Cursor Agent session.", vim.log.levels.INFO)
   return true
 end
 
