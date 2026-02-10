@@ -1,6 +1,8 @@
 # cursor-agent.nvim
 
-Cursor Agent integration for Neovim. This plugin provides a floating terminal UI around the `agent` CLI (Cursor CLI Agent), plus helpers to send file and selection references into an interactive chat session.
+Cursor Agent integration for Neovim.
+
+**Repository:** [suiramdev/cursor-nvim](https://github.com/suiramdev/cursor-nvim) This plugin provides a floating terminal UI around the `agent` CLI (Cursor CLI Agent), plus helpers to send file and selection references into an interactive chat session.
 
 ## Features
 
@@ -21,7 +23,7 @@ Using `lazy.nvim`:
 
 ```lua
 {
-  "your-user/cursor-agent.nvim",
+  "suiramdev/cursor-nvim",
   config = function()
     require("cursor_agent").setup {
       -- By default this runs `agent` in the current working directory.
@@ -54,13 +56,12 @@ Using `lazy.nvim`:
 
 ### AstroNvim
 
-In an AstroNvim v5 config that uses `lazy.nvim`, you can use a local checkout during development:
+Install from GitHub:
 
 ```lua
 ---@type LazySpec
 return {
-  dir = vim.fn.stdpath("config") .. "/cursor-agent.nvim",
-  name = "cursor-agent.nvim",
+  "suiramdev/cursor-nvim",
   lazy = true,
   config = function()
     require("cursor_agent").setup {
@@ -70,7 +71,12 @@ return {
 }
 ```
 
-Once the plugin is published on GitHub, replace `dir = ...` with `"your-user/cursor-agent.nvim"`.
+For local development, use a `dir` spec instead:
+
+```lua
+dir = vim.fn.stdpath("config") .. "/cursor-agent.nvim",
+name = "cursor-agent.nvim",
+```
 
 ## Usage
 
