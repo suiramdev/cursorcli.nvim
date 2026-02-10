@@ -320,6 +320,7 @@ local function setup_commands()
     "CursorAgentResume",
     "CursorAgentListSessions",
     "CursorAgentAddSelection",
+    "CursorAgentFixErrorAtCursor",
   }
 
   for _, name in ipairs(command_names) do
@@ -340,6 +341,11 @@ local function setup_commands()
   end, {
     range = true,
     desc = "Add @file:start-end reference to Cursor Agent chat",
+  })
+  api.nvim_create_user_command("CursorAgentFixErrorAtCursor", function()
+    M.request_fix_error_at_cursor()
+  end, {
+    desc = "Send error at cursor to Cursor Agent and ask to fix it",
   })
 end
 
@@ -436,6 +442,41 @@ function M.add_visual_selection()
   end
 
   return M.add_selection(start_pos[2], end_pos[2], api.nvim_get_current_buf())
+end
+
+--- Send a message asking the agent to fix the error at the cursor, with the
+--- error text in a code block and @file:start-end for the error location.
+function M.request_fix_error_at_cursor()
+  if not state.setup_done then M.setup() end
+
+  local bufnr = api.nvim_get_current_buf()
+  local line = api.nvim_win_get_cursor(0)[1]
+
+  local diagnostics = vim.diagnostic.get(bufnr, { lnum = line - 1 })
+  if not diagnostics or #diagnostics == 0 then
+    notify("No diagnostic/error at cursor position.", vim.log.levels.WARN)
+    return false
+  end
+
+  local error_lines = {}
+  local line_start, line_end = line, line
+  for _, d in ipairs(diagnostics) do
+    table.insert(error_lines, d.message)
+    if d.lnum ~= nil then
+      line_start = math.min(line_start, d.lnum + 1)
+      line_end = math.max(line_end, (d.end_lnum and d.end_lnum > d.lnum) and (d.end_lnum + 1) or (d.lnum + 1))
+    end
+  end
+  local error_text = table.concat(error_lines, "\n")
+  local reference = create_reference(bufnr, line_start, line_end)
+  if not reference then return false end
+
+  local message = ("Please fix the following error:\n\n```\n%s\n```\n\n%s"):format(error_text, reference)
+  if not M.open() then return false end
+  if not send_to_agent(message .. "\n") then return false end
+
+  notify("Sent fix-error request to Cursor Agent.", vim.log.levels.INFO)
+  return true
 end
 
 function M.is_running() return is_job_running() end

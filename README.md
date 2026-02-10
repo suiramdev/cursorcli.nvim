@@ -9,6 +9,7 @@ Cursor Agent integration for Neovim. This plugin provides a floating terminal UI
   - Open, close, toggle, restart, and resume sessions.
   - List previous sessions via `agent ls`.
 - Add file/line range references to the agent from the current buffer or a visual selection, in the form `@path:start-end`.
+- **Fix error at cursor**: send a message asking the agent to fix the diagnostic/error at the cursor, with the error text in a ``` code block and `@file:start-end` for the location.
 
 ## Requirements
 
@@ -43,6 +44,8 @@ Using `lazy.nvim`:
       desc = "List Cursor Agent sessions", mode = "n" },
     { "<leader>aa", function() require("cursor_agent").add_visual_selection() end,
       desc = "Add visual selection to Cursor Agent chat", mode = "x" },
+    { "<leader>af", function() require("cursor_agent").request_fix_error_at_cursor() end,
+      desc = "Ask Cursor Agent to fix error at cursor", mode = "n" },
   },
 }
 ```
@@ -78,8 +81,12 @@ Commands provided by the plugin:
 - `:CursorAgentResume` – resume the last session (`agent --continue`).
 - `:CursorAgentListSessions` – run `agent ls` in the Agent window.
 - `:CursorAgentAddSelection` – add a `@file:start-end` reference for a given line range.
+- `:CursorAgentFixErrorAtCursor` – send the diagnostic/error at the cursor to the agent in a “please fix” message (error in ``` block, plus `@file:start-end`).
 
-Helper for visual selections:
+Helpers and keybindings (when configured):
+
+- **Visual selection**: `require("cursor_agent").add_visual_selection()` or e.g. `<leader>aa` – send selection as `@file:start-end`.
+- **Fix error at cursor**: `require("cursor_agent").request_fix_error_at_cursor()` or e.g. `<leader>af` – send error at cursor and ask agent to fix it.
 
 - Call `require("cursor_agent").add_visual_selection()` (or use a mapped key such as `<leader>aa`) to send a reference for the current visual selection.
 
