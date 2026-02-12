@@ -11,6 +11,7 @@ Cursor Agent integration for Neovim.
 - Add file/line range references to the agent from the current buffer or a visual selection, in the form `@path:start-end`.
 - **Fix error at cursor**: send a message asking the agent to fix the diagnostic/error at the cursor, with the error text in a ``` code block and `@file:start-end` for the location.
 - **Add to new session (CAPS)**: with `<Leader>aA` — in **normal** mode, start a new session and send the error at cursor (same format as above); in **visual** mode, start a new session and send the highlighted code in a ``` block plus `@file:start-end`.
+- **Quick Edit (very early)**: visual selection + prompt in a floating popover, streaming output, and Edit/Ask modes.
 
 ## Requirements
 
@@ -92,6 +93,7 @@ Commands provided by the plugin:
 - `:CursorAgentFixErrorAtCursor` – send the diagnostic/error at the cursor to the agent in a “please fix” message (error in ``` block, plus `@file:start-end`).
 - `:CursorAgentFixErrorAtCursorInNewSession` – start a **new** agent session and send the error at cursor (same format).
 - `:CursorAgentAddVisualSelectionToNewSession` – start a **new** agent session and send the visual selection (code in ``` block + `@file:start-end`).
+- `:CursorAgentQuickEdit` – open the Quick Edit prompt for the current visual selection.
 
 Helpers and keybindings (when configured):
 
@@ -100,6 +102,22 @@ Helpers and keybindings (when configured):
 - **New session with CAPS**: `<leader>aA` – in normal mode, new session + error at cursor; in visual mode, new session + highlighted code and `@file:start-end`.
 
 - Call `require("cursor_agent").add_visual_selection()` (or use a mapped key such as `<leader>aa`) to send a reference for the current visual selection.
+
+### Quick Edit (very early)
+
+> ⚠️ **Very early feature:** Quick Edit is still experimental and may contain bugs or rough edges.
+> If you hit issues, please report them in GitHub issues with repro steps and (if possible) popover/error output.
+
+Quick Edit sends your prompt with context in the first argument, in this format:
+
+- `agent "@<file path>:<line start>-<line end> <prompt>" --output-format stream-json --print --stream-partial-output`
+- In **Edit** mode, `--approve-mcps` is also added.
+- In **Ask Question** mode (Shift+Enter), `--approve-mcps` is not added.
+
+Notes:
+
+- The `@file:start-end` reference is built from the current visual selection.
+- Selection context is sent in the prompt argument itself (not via stdin).
 
 ## Configuration
 
