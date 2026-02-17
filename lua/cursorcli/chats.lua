@@ -2,7 +2,7 @@
 -- Each chat has: id, name, buf, win, job_id, created_at.
 -- active_id = currently shown chat; last_id = last active for toggle.
 
-local config = require("cursor_agent.config")
+local config = require("cursorcli.config")
 
 local M = {}
 

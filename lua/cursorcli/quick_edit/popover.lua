@@ -1,8 +1,8 @@
 local api = vim.api
 local fn = vim.fn
-local config = require("cursor_agent.config")
-local util = require("cursor_agent.util")
-local stream = require("cursor_agent.quick_edit.stream")
+local config = require("cursorcli.config")
+local util = require("cursorcli.util")
+local stream = require("cursorcli.quick_edit.stream")
 
 local M = {}
 
@@ -79,12 +79,12 @@ function M.ensure_quick_buf()
   vim.keymap.set("n", "<Esc>", M.close_quick_popover, {
     buffer = buf,
     silent = true,
-    desc = "Close Cursor Agent Quick Edit popover",
+    desc = "Close Cursor CLI Quick Edit popover",
   })
   vim.keymap.set("n", "q", M.close_quick_popover, {
     buffer = buf,
     silent = true,
-    desc = "Close Cursor Agent Quick Edit popover",
+    desc = "Close Cursor CLI Quick Edit popover",
   })
 
   return buf
@@ -176,7 +176,7 @@ function M.open_quick_popover(lines, filetype)
   if quick_state.augroup then
     pcall(api.nvim_del_augroup_by_id, quick_state.augroup)
   end
-  quick_state.augroup = api.nvim_create_augroup("CursorAgentQuickEditPopover", { clear = true })
+  quick_state.augroup = api.nvim_create_augroup("CursorCliQuickEditPopover", { clear = true })
   M.attach_popover_close_autocmds_after_delay(400)
 end
 
@@ -231,7 +231,7 @@ function M.open_quick_popover_streaming(filetype, mode)
   if quick_state.augroup then
     pcall(api.nvim_del_augroup_by_id, quick_state.augroup)
   end
-  quick_state.augroup = api.nvim_create_augroup("CursorAgentQuickEditPopover", { clear = true })
+  quick_state.augroup = api.nvim_create_augroup("CursorCliQuickEditPopover", { clear = true })
   M.attach_popover_close_autocmds_after_delay(400)
 end
 

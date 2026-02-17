@@ -1,4 +1,4 @@
-local config = require("cursor_agent.config")
+local config = require("cursorcli.config")
 
 local M = {}
 
@@ -17,9 +17,9 @@ function M.notify(message, level)
   level = level or vim.log.levels.INFO
   vim.schedule(function()
     if has_snacks_notifier() then
-      _G.Snacks.notifier.notify(message, level, { title = "Cursor Agent" })
+      _G.Snacks.notifier.notify(message, level, { title = "Cursor CLI" })
     else
-      vim.notify(message, level, { title = "Cursor Agent" })
+      vim.notify(message, level, { title = "Cursor CLI" })
     end
   end)
 end

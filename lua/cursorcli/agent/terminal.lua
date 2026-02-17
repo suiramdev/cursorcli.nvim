@@ -1,6 +1,6 @@
 local api = vim.api
 local fn = vim.fn
-local chats = require("cursor_agent.chats")
+local chats = require("cursorcli.chats")
 
 local M = {}
 
@@ -31,7 +31,7 @@ function M.configure_terminal_buffer(bufnr, close_cb, chat_id)
   end, {
     buffer = bufnr,
     silent = true,
-    desc = "Close Cursor Agent window",
+    desc = "Close Cursor CLI window",
   })
 
   vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], {
@@ -45,7 +45,7 @@ function M.configure_terminal_buffer(bufnr, close_cb, chat_id)
   end, {
     buffer = bufnr,
     silent = true,
-    desc = "Close Cursor Agent window",
+    desc = "Close Cursor CLI window",
   })
 end
 

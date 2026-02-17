@@ -1,10 +1,10 @@
 local fn = vim.fn
-local config = require("cursor_agent.config")
-local references = require("cursor_agent.references")
-local popover = require("cursor_agent.quick_edit.popover")
-local stream = require("cursor_agent.quick_edit.stream")
-local selection = require("cursor_agent.quick_edit.selection")
-local session = require("cursor_agent.agent.session")
+local config = require("cursorcli.config")
+local references = require("cursorcli.references")
+local popover = require("cursorcli.quick_edit.popover")
+local stream = require("cursorcli.quick_edit.stream")
+local selection = require("cursorcli.quick_edit.selection")
+local session = require("cursorcli.agent.session")
 
 local M = {}
 
@@ -143,7 +143,7 @@ function M.run_quick_edit()
     return
   end
 
-  local input = require("cursor_agent.quick_edit.input")
+  local input = require("cursorcli.quick_edit.input")
   input.open_quick_edit_input_popup(sel, function(prompt, mode)
     M.start_quick_edit_job(prompt, sel, mode)
   end)

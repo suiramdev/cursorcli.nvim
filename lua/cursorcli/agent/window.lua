@@ -1,7 +1,7 @@
 local api = vim.api
-local config = require("cursor_agent.config")
-local util = require("cursor_agent.util")
-local chats = require("cursor_agent.chats")
+local config = require("cursorcli.config")
+local util = require("cursorcli.util")
+local chats = require("cursorcli.chats")
 
 local M = {}
 

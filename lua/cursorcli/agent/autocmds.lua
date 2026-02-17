@@ -1,7 +1,7 @@
 local api = vim.api
-local chats = require("cursor_agent.chats")
-local util = require("cursor_agent.util")
-local window = require("cursor_agent.agent.window")
+local chats = require("cursorcli.chats")
+local util = require("cursorcli.util")
+local window = require("cursorcli.agent.window")
 
 local M = {}
 
@@ -11,7 +11,7 @@ function M.setup()
   if augroup_id then
     pcall(api.nvim_del_augroup_by_id, augroup_id)
   end
-  augroup_id = api.nvim_create_augroup("CursorAgentIntegration", { clear = true })
+  augroup_id = api.nvim_create_augroup("CursorCliIntegration", { clear = true })
 
   api.nvim_create_autocmd("VimResized", {
     group = augroup_id,

@@ -1,7 +1,7 @@
 local api = vim.api
-local config = require("cursor_agent.config")
-local notify = require("cursor_agent.notify")
-local util = require("cursor_agent.util")
+local config = require("cursorcli.config")
+local notify = require("cursorcli.notify")
+local util = require("cursorcli.util")
 
 local M = {}
 
@@ -80,7 +80,7 @@ function M.open_quick_edit_input_popup(selection, on_submit)
   vim.keymap.set("n", "<Esc>", M.close_quick_edit_input_popup, { buffer = buf, silent = true })
   vim.keymap.set("i", "<Esc>", M.close_quick_edit_input_popup, { buffer = buf, silent = true })
 
-  input_popup.augroup = api.nvim_create_augroup("CursorAgentQuickEditInput", { clear = true })
+  input_popup.augroup = api.nvim_create_augroup("CursorCliQuickEditInput", { clear = true })
   api.nvim_create_autocmd("WinClosed", {
     group = input_popup.augroup,
     callback = function(args)

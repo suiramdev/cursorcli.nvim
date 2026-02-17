@@ -1,5 +1,5 @@
 local api = vim.api
-local references = require("cursor_agent.references")
+local references = require("cursorcli.references")
 
 local M = {}
 

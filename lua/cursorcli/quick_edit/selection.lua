@@ -1,8 +1,8 @@
 local api = vim.api
 local fn = vim.fn
-local config = require("cursor_agent.config")
-local notify = require("cursor_agent.notify")
-local util = require("cursor_agent.util")
+local config = require("cursorcli.config")
+local notify = require("cursorcli.notify")
+local util = require("cursorcli.util")
 
 local M = {}
 

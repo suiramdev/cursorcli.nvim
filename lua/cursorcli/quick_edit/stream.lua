@@ -1,13 +1,13 @@
 local api = vim.api
 local uv = vim.uv or vim.loop
-local config = require("cursor_agent.config")
-local util = require("cursor_agent.util")
+local config = require("cursorcli.config")
+local util = require("cursorcli.util")
 
 local M = {}
 
 local SPINNER_FRAMES = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
-local QUICK_EDIT_THINKING_HL = "CursorAgentQuickEditThinking"
-local QUICK_EDIT_TOOL_HL = "CursorAgentQuickEditTool"
+local QUICK_EDIT_THINKING_HL = "CursorCliQuickEditThinking"
+local QUICK_EDIT_TOOL_HL = "CursorCliQuickEditTool"
 
 local function stream_take_line(buf, flush_remainder)
   local i = buf:find("\n")
@@ -269,7 +269,7 @@ function M.stream_do_redraw()
   api.nvim_set_option_value("modifiable", false, { buf = quick_state.buf })
 
   if not quick_state.thinking_ns then
-    quick_state.thinking_ns = api.nvim_create_namespace("CursorAgentQuickEditThinking")
+    quick_state.thinking_ns = api.nvim_create_namespace("CursorCliQuickEditThinking")
   end
   api.nvim_buf_clear_namespace(quick_state.buf, quick_state.thinking_ns, 0, -1)
   if num_tool > 0 then

@@ -1,13 +1,13 @@
 local api = vim.api
 local fn = vim.fn
 local uv = vim.uv or vim.loop
-local config = require("cursor_agent.config")
-local notify = require("cursor_agent.notify")
-local references = require("cursor_agent.references")
-local util = require("cursor_agent.util")
-local chats = require("cursor_agent.chats")
-local window = require("cursor_agent.agent.window")
-local terminal = require("cursor_agent.agent.terminal")
+local config = require("cursorcli.config")
+local notify = require("cursorcli.notify")
+local references = require("cursorcli.references")
+local util = require("cursorcli.util")
+local chats = require("cursorcli.chats")
+local window = require("cursorcli.agent.window")
+local terminal = require("cursorcli.agent.terminal")
 
 local M = {}
 
@@ -53,12 +53,12 @@ function M.start_agent_session(chat_id, resume_last, extra_args, close_cb, layou
   end
 
   chat.buf = api.nvim_create_buf(false, false)
-  api.nvim_buf_set_var(chat.buf, "cursor_agent_chat_id", chat_id)
+  api.nvim_buf_set_var(chat.buf, "cursorcli_chat_id", chat_id)
   terminal.configure_terminal_buffer(chat.buf, close_cb, chat_id)
 
   local open_opts = layout_override and { position = layout_override } or nil
   if not window.open_window(chat_id, close_cb, open_opts) then
-    notify.notify("Unable to open Cursor Agent terminal window.", vim.log.levels.ERROR)
+    notify.notify("Unable to open Cursor CLI terminal window.", vim.log.levels.ERROR)
     return false
   end
 
@@ -80,9 +80,9 @@ function M.start_agent_session(chat_id, resume_last, extra_args, close_cb, layou
         vim.schedule(function()
           chats.set_job_id(chat_id, nil)
           if code ~= 0 then
-            notify.notify(("Cursor Agent exited with code %d"):format(code), vim.log.levels.WARN)
+            notify.notify(("Cursor CLI exited with code %d"):format(code), vim.log.levels.WARN)
           else
-            notify.notify("Cursor Agent exited.", vim.log.levels.INFO)
+            notify.notify("Cursor CLI exited.", vim.log.levels.INFO)
           end
         end)
       end,
@@ -90,7 +90,7 @@ function M.start_agent_session(chat_id, resume_last, extra_args, close_cb, layou
   end)
 
   if type(job_id) ~= "number" or job_id <= 0 then
-    notify.notify("Failed to start Cursor Agent terminal job.", vim.log.levels.ERROR)
+    notify.notify("Failed to start Cursor CLI terminal job.", vim.log.levels.ERROR)
     return false
   end
 
@@ -117,14 +117,14 @@ end
 function M.send_to_agent(text, chat_id)
   chat_id = chat_id or chats.get_active_id()
   if not chat_id or not terminal.is_job_running(chat_id) then
-    notify.notify("Cursor Agent is not running.", vim.log.levels.ERROR)
+    notify.notify("Cursor CLI is not running.", vim.log.levels.ERROR)
     return false
   end
 
   local chat = chats.get(chat_id)
   local sent = fn.chansend(chat.job_id, text)
   if type(sent) ~= "number" or sent <= 0 then
-    notify.notify("Failed sending text to Cursor Agent.", vim.log.levels.ERROR)
+    notify.notify("Failed sending text to Cursor CLI.", vim.log.levels.ERROR)
     return false
   end
 

@@ -1,8 +1,8 @@
-# cursor-agent.nvim
+# cursorcli.nvim
 
-Cursor Agent integration for Neovim.
+Cursor CLI integration for Neovim.
 
-**Repository:** [suiramdev/cursor-nvim](https://github.com/suiramdev/cursor-nvim) This plugin provides a floating terminal UI around the `agent` CLI (Cursor CLI Agent), plus helpers to send file and selection references into an interactive chat session.
+**Repository:** [cursorcli.nvim](https://github.com/your-user/cursorcli.nvim) — This plugin provides a floating terminal UI around the `agent` CLI (Cursor CLI), plus helpers to send file and selection references into an interactive chat session.
 
 ## Features
 
@@ -10,7 +10,7 @@ Cursor Agent integration for Neovim.
 - **Multiple chats**: create, rename, and switch between several agent chats (each with its own terminal session).
 - **Fuzzy finder with live preview**: Telescope-like picker (via [snacks.nvim](https://github.com/folke/snacks.nvim) when available) to select a chat; preview shows the last lines of each chat. Create a new chat or switch to an existing one from the picker.
 - **Open by layout**: `<leader>af` float, `<leader>av` vertical split, `<leader>ah` horizontal split; **restart** to start a new session in the current chat. Resume and list sessions via `agent ls`.
-- **Open with layout**: `:CursorAgentOpenWithLayout [float|vsplit|hsplit]` (or no argument to prompt); useful regardless of your default `position` in config.
+- **Open with layout**: `:CursorCliOpenWithLayout [float|vsplit|hsplit]` (or no argument to prompt); useful regardless of your default `position` in config.
 - Add file/line range references to the agent from the current buffer or a visual selection, in the form `@path:start-end`.
 - **Fix error at cursor**: send a message asking the agent to fix the diagnostic/error at the cursor, with the error text in a ``` code block and `@file:start-end` for the location.
 - **Add to new session (CAPS)**: with `<Leader>aA` — in **normal** mode, start a new session and send the error at cursor (same format as above); in **visual** mode, start a new session and send the highlighted code in a ``` block plus `@file:start-end`.
@@ -37,9 +37,9 @@ Using `lazy.nvim`:
 
 ```lua
 {
-  "suiramdev/cursor-nvim",
+  "your-user/cursorcli.nvim",
   config = function()
-    require("cursor_agent").setup {
+    require("cursorcli").setup {
       -- By default this runs `agent` in the current working directory.
       command = { "agent" },
       -- Optional tweaks:
@@ -50,21 +50,21 @@ Using `lazy.nvim`:
     }
   end,
   keys = {
-    { "<leader>af", "<Cmd>CursorAgentOpenWithLayout float<CR>",   desc = "Open Cursor Agent (floating window)",   mode = "n" },
-    { "<leader>av", "<Cmd>CursorAgentOpenWithLayout vsplit<CR>", desc = "Open Cursor Agent (vertical split)",   mode = "n" },
-    { "<leader>ah", "<Cmd>CursorAgentOpenWithLayout hsplit<CR>", desc = "Open Cursor Agent (horizontal split)", mode = "n" },
-    { "<leader>ac", function() require("cursor_agent").close() end,  desc = "Close Cursor Agent terminal",     mode = "n" },
-    { "<leader>an", function() require("cursor_agent").new_chat() end, desc = "New Cursor Agent chat", mode = "n" },
-    { "<leader>as", function() require("cursor_agent").select_chat() end, desc = "Select chat (fuzzy finder with preview)", mode = "n" },
-    { "<leader>ar", function() require("cursor_agent").rename_chat() end, desc = "Rename current Cursor Agent chat", mode = "n" },
-    { "<leader>aR", function() require("cursor_agent").resume() end, desc = "Resume last Cursor Agent chat", mode = "n" },
-    { "<leader>ax", function() require("cursor_agent").restart() end, desc = "Restart Cursor Agent (new session in current chat)", mode = "n" },
-    { "<leader>al", function() require("cursor_agent").list_sessions() end, desc = "List Cursor Agent sessions (agent ls)", mode = "n" },
-    { "<leader>aa", function() require("cursor_agent").add_visual_selection() end,
-      desc = "Add visual selection to Cursor Agent chat", mode = "x" },
-    { "<leader>aA", function() require("cursor_agent").request_fix_error_at_cursor_in_new_session() end,
+    { "<leader>af", "<Cmd>CursorCliOpenWithLayout float<CR>",   desc = "Open Cursor CLI (floating window)",   mode = "n" },
+    { "<leader>av", "<Cmd>CursorCliOpenWithLayout vsplit<CR>", desc = "Open Cursor CLI (vertical split)",   mode = "n" },
+    { "<leader>ah", "<Cmd>CursorCliOpenWithLayout hsplit<CR>", desc = "Open Cursor CLI (horizontal split)", mode = "n" },
+    { "<leader>ac", function() require("cursorcli").close() end,  desc = "Close Cursor CLI terminal",     mode = "n" },
+    { "<leader>an", function() require("cursorcli").new_chat() end, desc = "New Cursor CLI chat", mode = "n" },
+    { "<leader>as", function() require("cursorcli").select_chat() end, desc = "Select chat (fuzzy finder with preview)", mode = "n" },
+    { "<leader>ar", function() require("cursorcli").rename_chat() end, desc = "Rename current Cursor CLI chat", mode = "n" },
+    { "<leader>aR", function() require("cursorcli").resume() end, desc = "Resume last Cursor CLI chat", mode = "n" },
+    { "<leader>ax", function() require("cursorcli").restart() end, desc = "Restart Cursor CLI (new session in current chat)", mode = "n" },
+    { "<leader>al", function() require("cursorcli").list_sessions() end, desc = "List Cursor CLI sessions (agent ls)", mode = "n" },
+    { "<leader>aa", function() require("cursorcli").add_visual_selection() end,
+      desc = "Add visual selection to Cursor CLI chat", mode = "x" },
+    { "<leader>aA", function() require("cursorcli").request_fix_error_at_cursor_in_new_session() end,
       desc = "New session: send error at cursor", mode = "n" },
-    { "<leader>aA", function() require("cursor_agent").add_visual_selection_to_new_session() end,
+    { "<leader>aA", function() require("cursorcli").add_visual_selection_to_new_session() end,
       desc = "New session: send visual selection", mode = "x" },
   },
 }
@@ -77,10 +77,10 @@ Install from GitHub:
 ```lua
 ---@type LazySpec
 return {
-  "suiramdev/cursor-nvim",
+  "your-user/cursorcli.nvim",
   lazy = true,
   config = function()
-    require("cursor_agent").setup {
+    require("cursorcli").setup {
       command = { "agent" },
     }
   end,
@@ -90,37 +90,37 @@ return {
 For local development, use a `dir` spec instead:
 
 ```lua
-dir = vim.fn.stdpath("config") .. "/cursor-agent.nvim",
-name = "cursor-agent.nvim",
+dir = vim.fn.stdpath("config") .. "/cursorcli.nvim",
+name = "cursorcli.nvim",
 ```
 
 ## Usage
 
 Commands provided by the plugin:
 
-- `:CursorAgentOpen` – open or create a chat; useful for scripts.
-- `:CursorAgentOpenWithLayout [float|vsplit|hsplit]` – open agent as floating window or split; with no argument, prompts to choose (Float / Vertical split / Horizontal split). Suggested keys: `<leader>af` float, `<leader>av` vsplit, `<leader>ah` hsplit.
-- `:CursorAgentClose` – close the Agent window.
-- `:CursorAgentRestart` – stop the current session and start a new one in the current chat.
-- `:CursorAgentResume` – resume the last session (`agent --continue`).
-- `:CursorAgentNew [name]` – create a new agent chat (optional name).
-- `:CursorAgentSelect` – open the chat fuzzy finder (live preview when using snacks.nvim). Select a chat to switch, or "New chat" to create one.
-- `:CursorAgentRename [name]` – rename the current chat; prompts if name omitted (uses Snacks.input when available).
-- `:CursorAgentListSessions` – run `agent ls` in the Agent window.
-- `:CursorAgentAddSelection` – add a `@file:start-end` reference for a given line range.
-- `:CursorAgentFixErrorAtCursor` – send the diagnostic/error at the cursor to the agent in a “please fix” message (error in ``` block, plus `@file:start-end`).
-- `:CursorAgentFixErrorAtCursorInNewSession` – start a **new** agent session and send the error at cursor (same format).
-- `:CursorAgentAddVisualSelectionToNewSession` – start a **new** agent session and send the visual selection (code in ``` block + `@file:start-end`).
-- `:CursorAgentQuickEdit` – open the Quick Edit prompt for the current visual selection.
+- `:CursorCliOpen` – open or create a chat; useful for scripts.
+- `:CursorCliOpenWithLayout [float|vsplit|hsplit]` – open agent as floating window or split; with no argument, prompts to choose (Float / Vertical split / Horizontal split). Suggested keys: `<leader>af` float, `<leader>av` vsplit, `<leader>ah` hsplit.
+- `:CursorCliClose` – close the Agent window.
+- `:CursorCliRestart` – stop the current session and start a new one in the current chat.
+- `:CursorCliResume` – resume the last session (`agent --continue`).
+- `:CursorCliNew [name]` – create a new agent chat (optional name).
+- `:CursorCliSelect` – open the chat fuzzy finder (live preview when using snacks.nvim). Select a chat to switch, or "New chat" to create one.
+- `:CursorCliRename [name]` – rename the current chat; prompts if name omitted (uses Snacks.input when available).
+- `:CursorCliListSessions` – run `agent ls` in the Agent window.
+- `:CursorCliAddSelection` – add a `@file:start-end` reference for a given line range.
+- `:CursorCliFixErrorAtCursor` – send the diagnostic/error at the cursor to the agent in a “please fix” message (error in ``` block, plus `@file:start-end`).
+- `:CursorCliFixErrorAtCursorInNewSession` – start a **new** agent session and send the error at cursor (same format).
+- `:CursorCliAddVisualSelectionToNewSession` – start a **new** agent session and send the visual selection (code in ``` block + `@file:start-end`).
+- `:CursorCliQuickEdit` – open the Quick Edit prompt for the current visual selection.
 
 Helpers and keybindings (when configured):
 
 - **Open by layout**: `<leader>af` float, `<leader>av` vertical split, `<leader>ah` horizontal split.
-- **Visual selection**: `require("cursor_agent").add_visual_selection()` or e.g. `<leader>aa` – send selection as `@file:start-end`.
-- **Fix error at cursor**: `:CursorAgentFixErrorAtCursor` or `require("cursor_agent").request_fix_error_at_cursor()` – send error at cursor and ask agent to fix it.
+- **Visual selection**: `require("cursorcli").add_visual_selection()` or e.g. `<leader>aa` – send selection as `@file:start-end`.
+- **Fix error at cursor**: `:CursorCliFixErrorAtCursor` or `require("cursorcli").request_fix_error_at_cursor()` – send error at cursor and ask agent to fix it.
 - **New session with CAPS**: `<leader>aA` – in normal mode, new session + error at cursor; in visual mode, new session + highlighted code and `@file:start-end`.
 
-- Call `require("cursor_agent").add_visual_selection()` (or use a mapped key such as `<leader>aa`) to send a reference for the current visual selection.
+- Call `require("cursorcli").add_visual_selection()` (or use a mapped key such as `<leader>aa`) to send a reference for the current visual selection.
 
 ### Quick Edit (very early)
 
@@ -140,7 +140,7 @@ Notes:
 
 ## Configuration
 
-`require("cursor_agent").setup(opts)` accepts:
+`require("cursorcli").setup(opts)` accepts:
 
 - `command` (`string | string[]`, default: `{ "agent" }`): the CLI to run.
 - `auto_insert` (`boolean`, default: `true`): enter insert mode after opening the terminal.
@@ -156,7 +156,7 @@ Notes:
 
 ## Plugin structure
 
-The plugin is split into modules under `lua/cursor_agent/`:
+The plugin is split into modules under `lua/cursorcli/`:
 
 - `init.lua` — setup and public API (toggle, open, close, new_chat, select_chat, rename_chat, add_selection, quick_edit, etc.).
 - `config.lua` — defaults and shared state (quick edit; agent state is per-chat in `chats.lua`).
@@ -166,5 +166,5 @@ The plugin is split into modules under `lua/cursor_agent/`:
 - `util.lua`, `references.lua`, `diagnostics.lua` — helpers and path/reference building.
 - `agent/` — terminal session: window, terminal buffer, session lifecycle, autocmds (all per-chat).
 - `quick_edit/` — Quick Edit: stream parsing, popover, input popup, selection capture, job runner.
-- `commands.lua` — user commands (`:CursorAgentToggle`, `:CursorAgentNew`, `:CursorAgentSelect`, `:CursorAgentRename`, etc.).
+- `commands.lua` — user commands (`:CursorCliToggle`, `:CursorCliNew`, `:CursorCliSelect`, `:CursorCliRename`, etc.).
 

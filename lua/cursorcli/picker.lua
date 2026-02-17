@@ -1,12 +1,12 @@
 -- Fuzzy finder for agent chats with live preview (Snacks.picker when available).
 
 local api = vim.api
-local chats = require("cursor_agent.chats")
-local terminal = require("cursor_agent.agent.terminal")
-local session = require("cursor_agent.agent.session")
-local notify = require("cursor_agent.notify")
-local config = require("cursor_agent.config")
-local util = require("cursor_agent.util")
+local chats = require("cursorcli.chats")
+local terminal = require("cursorcli.agent.terminal")
+local session = require("cursorcli.agent.session")
+local notify = require("cursorcli.notify")
+local config = require("cursorcli.config")
+local util = require("cursorcli.util")
 
 local M = {}
 
@@ -96,7 +96,7 @@ function M.pick_chat(callback)
     text = "+ New chat",
     value = "__new__",
     idx = 0,
-    preview = { text = "Create a new Cursor Agent chat and open it.", ft = "markdown" },
+    preview = { text = "Create a new Cursor CLI chat and open it.", ft = "markdown" },
   })
 
   for i, chat in ipairs(list) do
@@ -129,7 +129,7 @@ function M.pick_chat(callback)
   if has_snacks_picker() then
     _G.Snacks.picker.pick({
       items = items,
-      title = " Cursor Agent Chats ",
+      title = " Cursor CLI Chats ",
       prompt = "Chat: ",
       preview = "preview",
       format = "text",
@@ -179,7 +179,7 @@ function M.pick_chat(callback)
     value_by_idx[i] = it.value
   end
   vim.ui.select(choices, {
-    prompt = "Cursor Agent Chats:",
+    prompt = "Cursor CLI Chats:",
     format_item = function(item)
       return item
     end,

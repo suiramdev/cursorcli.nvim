@@ -1,18 +1,18 @@
 local api = vim.api
 local fn = vim.fn
-local config = require("cursor_agent.config")
-local notify = require("cursor_agent.notify")
-local references = require("cursor_agent.references")
-local diagnostics = require("cursor_agent.diagnostics")
-local util = require("cursor_agent.util")
-local chats = require("cursor_agent.chats")
-local session = require("cursor_agent.agent.session")
-local terminal = require("cursor_agent.agent.terminal")
-local window = require("cursor_agent.agent.window")
-local autocmds = require("cursor_agent.agent.autocmds")
-local commands = require("cursor_agent.commands")
-local quick_edit_job = require("cursor_agent.quick_edit.job")
-local picker = require("cursor_agent.picker")
+local config = require("cursorcli.config")
+local notify = require("cursorcli.notify")
+local references = require("cursorcli.references")
+local diagnostics = require("cursorcli.diagnostics")
+local util = require("cursorcli.util")
+local chats = require("cursorcli.chats")
+local session = require("cursorcli.agent.session")
+local terminal = require("cursorcli.agent.terminal")
+local window = require("cursorcli.agent.window")
+local autocmds = require("cursorcli.agent.autocmds")
+local commands = require("cursorcli.commands")
+local quick_edit_job = require("cursorcli.quick_edit.job")
+local picker = require("cursorcli.picker")
 
 local M = {}
 
@@ -248,7 +248,7 @@ function M.request_fix_error_at_cursor()
   if not session.send_to_agent(message .. "\n") then
     return false
   end
-  notify.notify("Sent fix-error request to Cursor Agent.", vim.log.levels.INFO)
+  notify.notify("Sent fix-error request to Cursor CLI.", vim.log.levels.INFO)
   return true
 end
 
@@ -267,7 +267,7 @@ function M.request_fix_error_at_cursor_in_new_session()
   if not session.send_to_agent(message .. "\n") then
     return false
   end
-  notify.notify("Sent fix-error request to new Cursor Agent session.", vim.log.levels.INFO)
+  notify.notify("Sent fix-error request to new Cursor CLI session.", vim.log.levels.INFO)
   return true
 end
 
