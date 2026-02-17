@@ -18,6 +18,10 @@ Cursor Agent integration for Neovim.
 - Neovim 0.9+ (Lua API used).
 - `agent` binary available in your `$PATH` (or a compatible CLI you configure via `command`).
 
+### Optional: snacks.nvim
+
+If [folke/snacks.nvim](https://github.com/folke/snacks.nvim) is installed and loaded, this plugin uses `Snacks.notifier` for notifications (consistent styling and history). The plugin works fully without snacks; no extra dependency is required.
+
 ## Installation
 
 Using `lazy.nvim`:
@@ -131,4 +135,16 @@ Notes:
   - `width` (`number`): absolute columns or a fraction of the editor width.
   - `height` (`number`): absolute lines or a fraction of the editor height.
   - `border`, `title`, `title_pos`, `zindex`, `winblend`, `winhighlight`: standard Neovim window options.
+
+## Plugin structure
+
+The plugin is split into modules under `lua/cursor_agent/`:
+
+- `init.lua` — setup and public API (toggle, open, close, add_selection, quick_edit, etc.).
+- `config.lua` — defaults and shared state (agent + quick edit).
+- `notify.lua` — notifications (uses Snacks.notifier when available, else `vim.notify`).
+- `util.lua`, `references.lua`, `diagnostics.lua` — helpers and path/reference building.
+- `agent/` — terminal session: window, terminal buffer, session lifecycle, autocmds.
+- `quick_edit/` — Quick Edit: stream parsing, popover, input popup, selection capture, job runner.
+- `commands.lua` — user commands (`:CursorAgentToggle`, etc.).
 
